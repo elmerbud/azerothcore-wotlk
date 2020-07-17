@@ -11,6 +11,7 @@
 #include "Field.h"
 #include "LFG.h"
 #include "LFGQueue.h"
+#include "LFGSolo.h"
 #include "LFGGroupData.h"
 #include "LFGPlayerData.h"
 #include "Map.h"
