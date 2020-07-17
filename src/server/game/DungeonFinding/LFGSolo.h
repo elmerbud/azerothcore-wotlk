@@ -42,7 +42,7 @@ namespace lfg
         public:
             LFGSoloConfig();
 
-            void OnBeforeConfigLoad(bool reload);
+            void OnBeforeConfigLoad(bool reload) override;
 
     };
 
