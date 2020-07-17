@@ -37,7 +37,7 @@ namespace lfg
         }
     }
 
-    void LFGSoloConfig::OnBeforeConfigLoad(bool reload) override
+    void LFGSoloConfig::OnBeforeConfigLoad(bool reload) 
     {
         if (!reload) {
             std::string conf_path = _CONF_DIR;
