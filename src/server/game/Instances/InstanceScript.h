@@ -25,6 +25,8 @@ class Player;
 class GameObject;
 class Creature;
 
+struct InstanceSpawnGroupInfo;
+
 typedef std::set<GameObject*> DoorSet;
 typedef std::set<Creature*> MinionSet;
 
@@ -131,6 +133,7 @@ class InstanceScript : public ZoneScript
         //On creation, NOT load.
         virtual void Initialize() {}
 
+        virtual void Create();
         //On load
         virtual void Load(char const* data) { LoadBossState(data); }
 
@@ -220,6 +223,7 @@ class InstanceScript : public ZoneScript
 
         void UpdateDoorState(GameObject* door);
         void UpdateMinionState(Creature* minion, EncounterState state);
+        void UpdateSpawnGroups();
 
         std::string LoadBossState(char const* data);
         std::string GetBossSaveData();
@@ -228,6 +232,7 @@ class InstanceScript : public ZoneScript
         DoorInfoMap doors;
         MinionInfoMap minions;
         uint32 completedEncounters; // completed encounter mask, bit indexes are DungeonEncounter.dbc boss numbers, used for packets
+        std::vector<InstanceSpawnGroupInfo> const* const _instanceSpawnGroups;
 };
 
 template<class AI, class T>

@@ -2797,6 +2797,8 @@ void InstanceMap::CreateInstanceScript(bool load, std::string data, uint32 compl
         if (data != "")
             instance_script->Load(data.c_str());
     }
+    else
+        insance_script->Create();
 }
 
 /*

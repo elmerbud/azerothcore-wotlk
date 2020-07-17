@@ -383,6 +383,22 @@ std::string GetScriptsTableNameByType(ScriptsType type);
 ScriptMapMap* GetScriptsMapByType(ScriptsType type);
 std::string GetScriptCommandName(ScriptCommands command);
 
+//elmerbud
+struct TC_GAME_API InstanceSpawnGroupInfo
+{
+    enum
+    {
+        FLAG_ACTIVATE_SPAWN = 0x01,
+        FLAG_BLOCK_SPAWN = 0x02,
+
+        FLAG_ALL = (FLAG_ACTIVATE_SPAWN | FLAG_BLOCK_SPAWN)
+    };
+    uint8 BossStateId;
+    uint8 BossStates;
+    uint32 SpawnGroupId;
+    uint8 Flags;
+};
+
 struct SpellClickInfo
 {
     uint32 spellId;
@@ -492,6 +508,7 @@ struct AcoreString
 typedef std::map<uint64, uint64> LinkedRespawnContainer;
 typedef std::unordered_map<uint32, CreatureData> CreatureDataContainer;
 typedef std::unordered_map<uint32, GameObjectData> GameObjectDataContainer;
+typedef std::unordered_map<uint16, std::vector<InstanceSpawnGroupInfo>> InstanceSpawnGroupContainer;
 typedef std::map<TempSummonGroupKey, std::vector<TempSummonData> > TempSummonDataContainer;
 typedef std::unordered_map<uint32, CreatureLocale> CreatureLocaleContainer;
 typedef std::unordered_map<uint32, GameObjectLocale> GameObjectLocaleContainer;
@@ -986,6 +1003,8 @@ class ObjectMgr
         void LoadEquipmentTemplates();
         void LoadGameObjectLocales();
         void LoadGameobjects();
+        // elmerbud
+        void LoadInstanceSpawnGroups();
         void LoadItemTemplates();
         void LoadItemLocales();
         void LoadItemSetNames();
@@ -1243,6 +1262,10 @@ class ObjectMgr
         uint32 AddCreData(uint32 entry, uint32 map, float x, float y, float z, float o, uint32 spawntimedelay = 0);
         bool MoveCreData(uint32 guid, uint32 map, Position pos);
 
+        //elmerbud
+        SpawnGroupTemplateData const* GetSpawnGroupData(uint32 groupId) const { auto it = _spawnGroupDataStore.find(groupId); return it != _spawnGroupDataStore.end() ? &it->second : nullptr; }
+        std::vector<InstanceSpawnGroupInfo> const* GetSpawnGroupsForInstance(uint32 instanceId) const { auto it = _instanceSpawnGroupStore.find(instanceId); return it != _instanceSpawnGroupStore.end() ? &it->second : nullptr; }
+
         // reserved names
         void LoadReservedPlayersNames();
         bool IsReservedName(std::string const& name) const;
@@ -1484,6 +1507,9 @@ class ObjectMgr
         GossipMenuItemsLocaleContainer _gossipMenuItemsLocaleStore;
         PointOfInterestLocaleContainer _pointOfInterestLocaleStore;
 
+        //elmerbud
+        InstanceSpawnGroupContainer _instanceSpawnGroupStore;
+        
         CacheVendorItemContainer _cacheVendorItemStore;
         CacheTrainerSpellContainer _cacheTrainerSpellStore;
 

@@ -1830,6 +1830,9 @@ void World::SetInitialWorldSettings()
     sLog->outString("Loading faction change item pairs...");
     sObjectMgr->LoadFactionChangeItems();
 
+    sLog->outString("Loading instance spawn groups...");
+    sObjectMgr->LoadInstanceSpawnGroups();
+
     sLog->outString("Loading faction change reputation pairs...");
     sObjectMgr->LoadFactionChangeReputations();
 

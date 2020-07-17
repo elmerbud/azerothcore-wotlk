@@ -17,6 +17,7 @@
 #include "GroupMgr.h"
 #include "GuildMgr.h"
 #include "InstanceSaveMgr.h"
+#include "InstanceScript.h"
 #include "Language.h"
 #include "LFGMgr.h"
 #include "Log.h"
@@ -2843,6 +2844,65 @@ ItemTemplate const* ObjectMgr::GetItemTemplate(uint32 entry)
 {
     return entry < _itemTemplateStoreFast.size() ? _itemTemplateStoreFast[entry] : NULL;
 }
+
+//elmerbud
+void ObjectMgr::LoadInstanceSpawnGroups()
+{
+    uint32 oldMSTime = getMSTime();
+
+    //                                               0              1            2           3             4
+    QueryResult result = WorldDatabase.Query("SELECT instanceMapId, bossStateId, bossStates, spawnGroupId, flags FROM instance_spawn_groups");
+
+    if (!result)
+    {
+        TC_LOG_ERROR("server.loading", ">> Loaded 0 instance spawn groups. DB table `instance_spawn_groups` is empty.");
+        return;
+    }
+
+    uint32 n = 0;
+    do
+    {
+        Field* fields = result->Fetch();
+        uint32 const spawnGroupId = fields[3].GetUInt32();
+        auto it = _spawnGroupDataStore.find(spawnGroupId);
+        if (it == _spawnGroupDataStore.end() || (it->second.flags & SPAWNGROUP_FLAG_SYSTEM))
+        {
+            TC_LOG_ERROR("server.loading", "Invalid spawn group %u specified for instance %u. Skipped.", spawnGroupId, fields[0].GetUInt16());
+            continue;
+        }
+
+        uint16 const instanceMapId = fields[0].GetUInt16();
+        auto& vector = _instanceSpawnGroupStore[instanceMapId];
+        vector.emplace_back();
+        InstanceSpawnGroupInfo& info = vector.back();
+        info.SpawnGroupId = spawnGroupId;
+        info.BossStateId = fields[1].GetUInt8();
+
+        uint8 const ALL_STATES = (1 << TO_BE_DECIDED) - 1;
+        uint8 const states = fields[2].GetUInt8();
+        if (states & ~ALL_STATES)
+        {
+            info.BossStates = states & ALL_STATES;
+            TC_LOG_ERROR("server.loading", "Instance spawn group (%u,%u) had invalid boss state mask %u - truncated to %u.", instanceMapId, spawnGroupId, states, info.BossStates);
+        }
+        else
+            info.BossStates = states;
+
+        uint8 const flags = fields[4].GetUInt8();
+        if (flags & ~InstanceSpawnGroupInfo::FLAG_ALL)
+        {
+            info.Flags = flags & InstanceSpawnGroupInfo::FLAG_ALL;
+            TC_LOG_ERROR("server.loading", "Instance spawn group (%u,%u) had invalid flags %u - truncated to %u.", instanceMapId, spawnGroupId, flags, info.Flags);
+        }
+        else
+            info.Flags = flags;
+
+        ++n;
+    } while (result->NextRow());
+
+    TC_LOG_INFO("server.loading", ">> Loaded %u instance spawn groups in %u ms", n, GetMSTimeDiffToNow(oldMSTime));
+}
+
 
 void ObjectMgr::LoadItemSetNameLocales()
 {

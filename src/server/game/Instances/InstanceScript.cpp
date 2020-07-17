@@ -86,6 +86,7 @@ void InstanceScript::LoadDoorData(const DoorData* data)
 #endif
 }
 
+//elmerbud
 void InstanceScript::UpdateMinionState(Creature* minion, EncounterState state)
 {
     switch (state)
@@ -100,12 +101,48 @@ void InstanceScript::UpdateMinionState(Creature* minion, EncounterState state)
             if (!minion->IsAlive())
                 minion->Respawn();
             else if (!minion->GetVictim())
-                minion->AI()->DoZoneInCombat(NULL, 100.0f);
+                minion->AI()->DoZoneInCombat();
             break;
         default:
             break;
     }
 }
+
+//elmerbud
+void InstanceScript::UpdateSpawnGroups()
+{
+    if (!_instanceSpawnGroups)
+        return;
+    enum states { BLOCK, SPAWN, FORCEBLOCK };
+    std::unordered_map<uint32, states> newStates;
+    for (auto it = _instanceSpawnGroups->begin(), end = _instanceSpawnGroups->end(); it != end; ++it)
+    {
+        InstanceSpawnGroupInfo const& info = *it;
+        states& curValue = newStates[info.SpawnGroupId]; // makes sure there's a BLOCK value in the map
+        if (curValue == FORCEBLOCK) // nothing will change this
+            continue;
+        if (!((1 << GetBossState(info.BossStateId)) & info.BossStates))
+            continue;
+        if (info.Flags & InstanceSpawnGroupInfo::FLAG_BLOCK_SPAWN)
+            curValue = FORCEBLOCK;
+        else if (info.Flags & InstanceSpawnGroupInfo::FLAG_ACTIVATE_SPAWN)
+            curValue = SPAWN;
+    }
+    for (auto const& pair : newStates)
+    {
+        uint32 const groupId = pair.first;
+        bool const doSpawn = (pair.second == SPAWN);
+        if (sObjectMgr->IsSpawnGroupActive(groupId) == doSpawn)
+            continue; // nothing to do here
+        // if we should spawn group, then spawn it...
+        if (doSpawn)
+            sObjectMgr->SpawnGroupSpawn(groupId, instance);
+        else // otherwise, set it as inactive so it no longer respawns (but don't despawn it)
+            sObjectMgr->SetSpawnGroupActive(groupId, false);
+    }
+}
+
+
 
 void InstanceScript::UpdateDoorState(GameObject* door)
 {
@@ -225,10 +262,20 @@ bool InstanceScript::SetBossState(uint32 id, EncounterState state)
         for (MinionSet::iterator i = bossInfo->minion.begin(); i != bossInfo->minion.end(); ++i)
             UpdateMinionState(*i, state);
 
+        //elmerbud
+        UpdateSpawnGroups();
         return true;
     }
     return false;
 }
+
+void InstanceScript::Create()
+{
+    for (size_t i = 0; i < bosses.size(); ++i)
+        SetBossState(i, NOT_STARTED);
+    UpdateSpawnGroups();
+}
+
 
 std::string InstanceScript::LoadBossState(const char * data)
 {
@@ -243,6 +290,7 @@ std::string InstanceScript::LoadBossState(const char * data)
         if (buff < TO_BE_DECIDED)
             SetBossState(bossId, (EncounterState)buff);
     }
+    UpdateSpawnGroups();
     return loadStream.str();
 }
 
