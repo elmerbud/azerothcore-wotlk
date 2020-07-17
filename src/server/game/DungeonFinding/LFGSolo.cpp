@@ -26,7 +26,7 @@ namespace lfg
         }
     }
 
-    void LFGSolo::OnLogin(Player* player)
+    void LFGSolo::OnLogin(Player* __attribute__ ((unused))player)
     {
         if (sConfigMgr->GetIntDefault("SoloLFG.Enable", true))
         {
