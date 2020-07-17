@@ -20,7 +20,7 @@ namespace lfg
     {
 
         public:
-            LFGSoloAnnounce();
+            LFGSoloAnnounce() : PlayerScript("LFGSoloAnnounce") {}
 
             void OnLogin(Player* player);
 
@@ -30,7 +30,7 @@ namespace lfg
     {
 
         public:
-            LFGSolo();
+            LFGSolo() : PlayerScript("LFGSolo") {}
 
             void OnLogin(Player* player);
 
@@ -40,7 +40,7 @@ namespace lfg
     {
 
         public:
-            LFGSoloConfig();
+            LFGSoloConfig() : WorldScript("LFGSoloConfig") { }
 
             void OnBeforeConfigLoad(bool reload) override;
 
