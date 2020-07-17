@@ -13,6 +13,7 @@
 #include "LFGMgr.h"
 #include "Chat.h"
 #include "Opcodes.h"
+#include "LFGSolo.h"
 
 namespace lfg
 {
