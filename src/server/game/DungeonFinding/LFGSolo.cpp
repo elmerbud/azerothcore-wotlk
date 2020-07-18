@@ -20,32 +20,36 @@ namespace lfg
     void LFGSoloAnnounce::OnLogin(Player* player)
     {
 
-        if (sConfigMgr->GetBoolDefault("SoloLFG.Announce", true))
+        if (sConfigMgr->GetIntDefault("LFG.SOLO.Announce", true))
         {
             ChatHandler(player->GetSession()).SendSysMessage("This server is running the |cff4CFF00Solo Dungeon Finder |rCORE-update.");
+        }
+        else
+        {
+            ChatHandler(player->GetSession()).SendSysMessage("|cff4CFF00Solo Dungeon Finder |rCORE-update announcer is disabled.");
         }
     }
 
     void LFGSolo::OnLogin(Player* __attribute__ ((unused))player)
     {
-        if (sConfigMgr->GetIntDefault("SoloLFG.Enable", true))
-        {
+        if (sConfigMgr->GetIntDefault("LFG.SOLO.Enable", true))
+        {   
+            ChatHandler(player->GetSession()).SendSysMessage("|cff4CFF00Solo Dungeon Finder |gEnabled.");
             if (!sLFGMgr->IsSoloLFG())
             {
                 sLFGMgr->ToggleSoloLFG();
             }
+        }
+        else 
+        {
+            ChatHandler(player->GetSession()).SendSysMessage("|cff4CFF00Solo Dungeon Finder |rDisabled.");
         }
     }
 
     void LFGSoloConfig::OnBeforeConfigLoad(bool reload) 
     {
         if (!reload) {
-            std::string conf_path = _CONF_DIR;
-            std::string cfg_file = conf_path + "/SoloLfg.conf";
-
-            std::string cfg_def_file = cfg_file + ".dist";
-            sConfigMgr->LoadMore(cfg_def_file.c_str());
-            sConfigMgr->LoadMore(cfg_file.c_str());
+            // TBD - advanced configurations
         }
     }
 

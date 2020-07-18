@@ -3503,6 +3503,28 @@ Calculate.Gameoject.Zone.Area.Data = 0
 
 LFG.Location.All = 0
 
+###################################################################################################
+
+#    LFG.SOLO settings
+#
+#
+#    SoloLFG.Enable
+#        Description: Enable the module
+#        Default:     1  - (Enabled)
+#                     0  - (Disabled)
+
+LFG.SOLO.Enable = 1
+
+#    SoloLFG.Announce
+#        Description: Announce the module
+#        Default:     1  - (Enabled)
+#                     0  - (Disabled)
+
+LFG.SOLO.Announce = 1
+
+#
+###################################################################################################
+
 #
 #    ICC Buff
 #       Description: Specify ICC buff
