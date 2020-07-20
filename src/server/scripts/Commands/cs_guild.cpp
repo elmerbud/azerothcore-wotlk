@@ -156,7 +156,6 @@ public:
         if (!targetGuild)
             sLog->outError("cs_guild:HandleGuildInviteCommand: error !targetGuild");
             return false;
-        sLog->outBasic("cs_guild:HandleGuildInviteCommand: targetGuild = '%s'", targetGuild);
 
         // player's guild membership checked in AddMember before add
         return targetGuild->AddMember(targetGuid);
