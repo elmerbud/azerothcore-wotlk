@@ -17,6 +17,8 @@ EndScriptData */
 #include "GuildMgr.h"
 #include "ObjectAccessor.h"
 #include "ScriptMgr.h"
+#include "Log.h"
+
 
 class guild_commandscript : public CommandScript
 {
@@ -137,15 +139,18 @@ public:
 
         char* tailStr = *args != '"' ? strtok(nullptr, "") : (char*)args;
         if (!tailStr)
+            sLog->outError("cs_guild:HandleGuildInviteCommand: errot !tailStr");
             return false;
 
         char* guildStr = handler->extractQuotedArg(tailStr);
         if (!guildStr)
+            sLog->outError("cs_guild:HandleGuildInviteCommand: errot !guildStr");
             return false;
 
         std::string guildName = guildStr;
         Guild* targetGuild = sGuildMgr->GetGuildByName(guildName);
         if (!targetGuild)
+            sLog->outError("cs_guild:HandleGuildInviteCommand: errot !targetGuild");
             return false;
 
         // player's guild membership checked in AddMember before add
