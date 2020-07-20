@@ -130,28 +130,33 @@ public:
     static bool HandleGuildInviteCommand(ChatHandler* handler, char const* args)
     {
         if (!*args)
+            sLog->outError("cs_guild:HandleGuildInviteCommand: error !*args");
             return false;
 
         // if not guild name only (in "") then player name
         uint64 targetGuid;
         if (!handler->extractPlayerTarget(*args != '"' ? (char*)args : nullptr, nullptr, &targetGuid))
+            sLog->outError("cs_guild:HandleGuildInviteCommand: error !extractPlayerTarget");
             return false;
 
         char* tailStr = *args != '"' ? strtok(nullptr, "") : (char*)args;
         if (!tailStr)
-            sLog->outError("cs_guild:HandleGuildInviteCommand: errot !tailStr");
+            sLog->outError("cs_guild:HandleGuildInviteCommand: error !tailStr");
             return false;
+        sLog->outBasic("cs_guild:HandleGuildInviteCommand: tailStr = '%s'", tailStr);
 
         char* guildStr = handler->extractQuotedArg(tailStr);
         if (!guildStr)
-            sLog->outError("cs_guild:HandleGuildInviteCommand: errot !guildStr");
+            sLog->outError("cs_guild:HandleGuildInviteCommand: error !guildStr");
             return false;
+        sLog->outBasic("cs_guild:HandleGuildInviteCommand: guildStr = '%s'", guildStr);
 
         std::string guildName = guildStr;
         Guild* targetGuild = sGuildMgr->GetGuildByName(guildName);
         if (!targetGuild)
-            sLog->outError("cs_guild:HandleGuildInviteCommand: errot !targetGuild");
+            sLog->outError("cs_guild:HandleGuildInviteCommand: error !targetGuild");
             return false;
+        sLog->outBasic("cs_guild:HandleGuildInviteCommand: targetGuild = '%s'", targetGuild);
 
         // player's guild membership checked in AddMember before add
         return targetGuild->AddMember(targetGuid);
