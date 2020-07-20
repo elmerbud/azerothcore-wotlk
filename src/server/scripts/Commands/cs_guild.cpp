@@ -17,8 +17,6 @@ EndScriptData */
 #include "GuildMgr.h"
 #include "ObjectAccessor.h"
 #include "ScriptMgr.h"
-#include "Log.h"
-
 
 class guild_commandscript : public CommandScript
 {
@@ -130,31 +128,27 @@ public:
     static bool HandleGuildInviteCommand(ChatHandler* handler, char const* args)
     {
         if (!*args)
-            sLog->outError("cs_guild:HandleGuildInviteCommand: error !*args");
             return false;
 
         // if not guild name only (in "") then player name
         uint64 targetGuid;
         if (!handler->extractPlayerTarget(*args != '"' ? (char*)args : nullptr, nullptr, &targetGuid))
-            sLog->outError("cs_guild:HandleGuildInviteCommand: error !extractPlayerTarget");
             return false;
 
         char* tailStr = *args != '"' ? strtok(nullptr, "") : (char*)args;
         if (!tailStr)
-            sLog->outError("cs_guild:HandleGuildInviteCommand: error !tailStr");
+            // error X
             return false;
-        sLog->outBasic("cs_guild:HandleGuildInviteCommand: tailStr = '%s'", tailStr);
 
         char* guildStr = handler->extractQuotedArg(tailStr);
         if (!guildStr)
-            sLog->outError("cs_guild:HandleGuildInviteCommand: error !guildStr");
+            // error Y
             return false;
-        sLog->outBasic("cs_guild:HandleGuildInviteCommand: guildStr = '%s'", guildStr);
 
         std::string guildName = guildStr;
         Guild* targetGuild = sGuildMgr->GetGuildByName(guildName);
         if (!targetGuild)
-            sLog->outError("cs_guild:HandleGuildInviteCommand: error !targetGuild");
+            // erro Z
             return false;
 
         // player's guild membership checked in AddMember before add
